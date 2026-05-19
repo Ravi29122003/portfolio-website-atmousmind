@@ -1,0 +1,1291 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>AtmousMind — We build the web, loudly.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  :root {
+    --bg: #0E0E0E;
+    --surface: #1A1A1A;
+    --ink: #FAFAF7;
+    --ink-soft: #B5B2A9;
+    --muted: #6B6760;
+    --coral: #E04830;
+    --coral-soft: #FF5E40;
+    --line: #2A2A2A;
+    --sans: "Bricolage Grotesque", -apple-system, BlinkMacSystemFont, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  body { font-size: 16px; line-height: 1.55; overflow-x: hidden; }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+  ::selection { background: var(--coral); color: white; }
+
+  .container { max-width: 1440px; margin: 0 auto; padding: 0 40px; }
+  @media (max-width: 720px) { .container { padding: 0 22px; } }
+
+  /* ────────────── NAV ────────────── */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(12px) saturate(120%);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-row { display: flex; align-items: center; justify-content: space-between; height: 70px; }
+  .brand { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 22px; letter-spacing: -0.02em; }
+  .brand img { height: 30px; width: auto; display: block; transition: opacity .2s; }
+  .brand:hover img { opacity: 0.8; }
+  .brand-mark {
+    width: 26px; height: 26px;
+    background: var(--coral);
+    border-radius: 4px;
+    transform: rotate(45deg);
+    position: relative;
+    transition: transform .4s;
+  }
+  .brand:hover .brand-mark { transform: rotate(135deg); }
+  .brand-mark::after {
+    content: ""; position: absolute; inset: 5px;
+    background: var(--bg); border-radius: 2px;
+  }
+  .brand b { color: var(--coral); }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-links a {
+    padding: 8px 14px; font-size: 14px; border-radius: 999px;
+    font-family: var(--mono); font-weight: 500;
+    transition: background .2s;
+  }
+  .nav-links a:hover { background: var(--surface); }
+  .nav-cta {
+    background: var(--coral); color: white;
+    padding: 10px 18px; border-radius: 999px; font-size: 14px;
+    font-family: var(--mono); font-weight: 500;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 0 0 0 var(--coral);
+  }
+  .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 6px 24px -8px var(--coral); }
+  @media (max-width: 820px) { .nav-links { display: none; } }
+
+  /* ────────────── HERO ────────────── */
+  .hero {
+    padding: 60px 0 90px;
+    position: relative; overflow: hidden;
+  }
+  .hero-meta {
+    display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em;
+    text-transform: uppercase; color: var(--ink-soft);
+    margin-bottom: 40px;
+  }
+  .hero-meta .pulse {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 4px 12px 4px 8px; border: 1px solid var(--line); border-radius: 999px;
+  }
+  .hero-meta .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: #6FE08B;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 6px rgba(111,224,139,0.15); } }
+
+  .hero-head {
+    font-size: clamp(72px, 14vw, 220px);
+    line-height: 0.84;
+    letter-spacing: -0.055em;
+    font-weight: 700;
+    font-variation-settings: "opsz" 96;
+  }
+  .hero-head .row1 { display: flex; align-items: center; gap: 30px; flex-wrap: wrap; }
+  .hero-head .tag {
+    background: var(--coral); color: white;
+    font-family: var(--mono); font-weight: 500;
+    font-size: clamp(11px, 1vw, 13px);
+    padding: 12px 18px;
+    border-radius: 999px;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    line-height: 1; display: inline-flex; align-items: center; gap: 8px;
+    white-space: nowrap;
+    align-self: center;
+  }
+  .hero-head .coral { color: var(--coral); }
+  .hero-head .underline {
+    position: relative; display: inline-block;
+  }
+  .hero-head .underline::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0.08em;
+    height: 0.12em; background: var(--coral); border-radius: 0.06em;
+    transform: scaleX(0); transform-origin: left; transition: transform 1.2s cubic-bezier(.4,0,.2,1) 0.4s;
+  }
+  .hero-head.in .underline::after { transform: scaleX(1); }
+
+  .hero-foot {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px;
+    margin-top: 80px; align-items: end;
+    padding-top: 32px;
+    border-top: 1px solid var(--line);
+  }
+  @media (max-width: 900px) { .hero-foot { grid-template-columns: 1fr; gap: 28px; } }
+  .hero-lede { font-size: 18px; line-height: 1.5; color: var(--ink-soft); max-width: 42ch; }
+  .hero-lede em { color: var(--ink); font-style: normal; }
+  .hero-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--coral); color: white;
+    padding: 16px 24px; border-radius: 999px; font-size: 14px;
+    font-family: var(--mono); font-weight: 500;
+    display: inline-flex; align-items: center; gap: 10px;
+    transition: transform .2s, background .2s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); background: var(--coral-soft); }
+  .btn-ghost {
+    border: 1px solid var(--line);
+    padding: 15px 22px; border-radius: 999px; font-size: 14px;
+    font-family: var(--mono); font-weight: 500;
+    transition: background .2s, border-color .2s;
+  }
+  .btn-ghost:hover { background: var(--surface); border-color: var(--ink); }
+  .hero-stats { display: flex; gap: 30px; }
+  .hero-stats b {
+    font-size: 36px; font-weight: 700; letter-spacing: -0.03em;
+    display: block; line-height: 1;
+  }
+  .hero-stats span {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-soft); margin-top: 6px; display: block;
+  }
+
+  /* ────────────── TICKER ────────────── */
+  .ticker {
+    background: var(--coral); color: white;
+    overflow: hidden; padding: 18px 0;
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  }
+  .ticker-track {
+    display: flex; gap: 40px; white-space: nowrap;
+    animation: scroll 30s linear infinite;
+    font-family: var(--mono); font-weight: 500;
+    font-size: 14px; text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .ticker-track span { display: inline-flex; align-items: center; gap: 40px; }
+  .ticker-track .sep { font-size: 12px; opacity: 0.6; }
+  @keyframes scroll { to { transform: translateX(-50%); } }
+
+  /* ────────────── SECTION CHROME ────────────── */
+  .section { padding: 130px 0; border-bottom: 1px solid var(--line); position: relative; }
+  .section-label {
+    font-family: var(--mono); font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--coral);
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-bottom: 32px;
+    padding: 6px 14px;
+    border: 1px solid var(--coral);
+    border-radius: 999px;
+  }
+  .section-label::before {
+    content: ""; width: 6px; height: 6px; background: var(--coral); border-radius: 50%;
+  }
+  .section-head {
+    font-size: clamp(48px, 7.5vw, 120px);
+    line-height: 0.92; letter-spacing: -0.04em;
+    max-width: 18ch; margin-bottom: 80px; font-weight: 700;
+    font-variation-settings: "opsz" 96;
+  }
+  .section-head .coral { color: var(--coral); }
+
+  /* ────────────── WORK ────────────── */
+  .work-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; }
+  @media (max-width: 900px) { .work-grid { grid-template-columns: 1fr; } }
+  .work-card {
+    background: var(--surface); border-radius: 18px;
+    overflow: hidden; position: relative;
+    border: 1px solid var(--line);
+    transition: transform .4s, border-color .2s;
+    display: flex; flex-direction: column;
+  }
+  .work-card:hover { transform: translateY(-6px); border-color: color-mix(in srgb, var(--coral) 30%, var(--line)); }
+  .work-card.feat { grid-column: 1 / -1; }
+  .work-card.feat .work-visual { aspect-ratio: 21/9; }
+  .work-visual {
+    aspect-ratio: 4/3; position: relative; overflow: hidden;
+    border-bottom: 1px solid var(--line);
+  }
+  .work-body { padding: 28px 30px 30px; flex: 1; display: flex; flex-direction: column; gap: 14px; }
+  .work-row1 { display: flex; justify-content: space-between; align-items: baseline; }
+  .work-num { font-family: var(--mono); font-size: 11px; color: var(--coral); letter-spacing: 0.08em; }
+  .work-year { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .work-card h3 {
+    font-size: clamp(28px, 3.2vw, 44px); line-height: 0.98;
+    font-weight: 700; letter-spacing: -0.025em;
+  }
+  .work-card h3 .coral { color: var(--coral); }
+  .work-meta { display: flex; gap: 16px; font-family: var(--mono); font-size: 12px; color: var(--ink-soft); }
+  .work-meta .dot { color: var(--muted); }
+  .work-result {
+    margin-top: auto; padding-top: 20px; border-top: 1px solid var(--line);
+    display: flex; justify-content: space-between; align-items: end; gap: 20px;
+  }
+  .work-result .metric b {
+    font-size: 32px; font-weight: 700; letter-spacing: -0.02em;
+    color: var(--coral); line-height: 1; display: block;
+  }
+  .work-result .metric span { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); margin-top: 4px; display: block; }
+  .view-link {
+    font-family: var(--mono); font-size: 13px;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px;
+    transition: background .2s, border-color .2s, color .2s;
+    white-space: nowrap;
+  }
+  .work-card:hover .view-link { background: var(--coral); border-color: var(--coral); color: white; }
+
+  /* Mockups */
+  .mock { width: 100%; height: 100%; position: relative; overflow: hidden; }
+
+  /* ═════════════ CLIENT MOCKUPS ═════════════ */
+
+  /* The India Craft House — heritage commerce, featured (real screenshots) */
+  .mock-tich {
+    background: #1A1A1A;
+    padding: 14px;
+    display: grid;
+    grid-template-columns: 1.7fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 10px;
+  }
+  .mock-tich .shot {
+    background-size: cover;
+    background-position: center;
+    background-color: #0E0E0E;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.06);
+    position: relative;
+    overflow: hidden;
+  }
+  .mock-tich .shot-hero {
+    grid-row: 1 / span 2;
+    background-image: url('assets/tich-hero.png');
+  }
+  .mock-tich .shot-pottery { background-image: url('assets/tich-pottery.png'); }
+  .mock-tich .shot-shirts { background-image: url('assets/tich-shirts.png'); }
+  .mock-tich .url-badge {
+    position: absolute; bottom: 12px; left: 12px;
+    padding: 5px 11px 5px 9px;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 999px;
+    font-family: var(--mono); font-size: 10px;
+    color: white; display: inline-flex; align-items: center; gap: 6px;
+    letter-spacing: 0.02em;
+  }
+  .mock-tich .url-badge::before {
+    content: ""; width: 6px; height: 6px; border-radius: 50%;
+    background: #6FE08B; box-shadow: 0 0 8px #6FE08B;
+  }
+
+  /* Arshis — jewellery (real screenshots) */
+  .mock-arshis {
+    background: #1A1A1A;
+    padding: 12px;
+    display: grid;
+    grid-template-rows: 1.25fr 1fr;
+    gap: 8px;
+  }
+  .mock-arshis .shot {
+    background-size: cover;
+    background-position: center;
+    background-color: #0E0E0E;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.06);
+    position: relative;
+    overflow: hidden;
+  }
+  .mock-arshis .shot-hero { background-image: url('assets/arshis-hero.png'); background-position: center 28%; }
+  .mock-arshis .shot-cats { background-image: url('assets/arshis-categories.png'); background-position: center top; }
+  .mock-arshis .url-badge {
+    position: absolute; bottom: 10px; left: 10px;
+    padding: 4px 10px 4px 8px;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 999px;
+    font-family: var(--mono); font-size: 10px;
+    color: white; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .mock-arshis .url-badge::before {
+    content: ""; width: 6px; height: 6px; border-radius: 50%;
+    background: #6FE08B; box-shadow: 0 0 8px #6FE08B;
+  }
+
+  /* Unique Info Systems (real screenshots) */
+  .mock-uis {
+    background: #1A1A1A;
+    padding: 12px;
+    display: grid;
+    grid-template-rows: 1.25fr 1fr;
+    gap: 8px;
+  }
+  .mock-uis .shot {
+    background-size: cover;
+    background-position: center top;
+    background-color: #0E0E0E;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.06);
+    position: relative;
+    overflow: hidden;
+  }
+  .mock-uis .shot-hero { background-image: url('assets/uis-hero.png'); }
+  .mock-uis .shot-product { background-image: url('assets/uis-product.png'); background-position: center; }
+  .mock-uis .url-badge {
+    position: absolute; bottom: 10px; left: 10px;
+    padding: 4px 10px 4px 8px;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 999px;
+    font-family: var(--mono); font-size: 10px;
+    color: white; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .mock-uis .url-badge::before {
+    content: ""; width: 6px; height: 6px; border-radius: 50%;
+    background: #6FE08B; box-shadow: 0 0 8px #6FE08B;
+  }
+
+  /* Kalankit (real screenshots, featured) */
+  .mock-kalankit {
+    background: #1A1A1A;
+    padding: 14px;
+    display: grid;
+    grid-template-columns: 1.7fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 10px;
+  }
+  .mock-kalankit .shot {
+    background-size: cover;
+    background-position: center;
+    background-color: #0E0E0E;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.06);
+    position: relative;
+    overflow: hidden;
+  }
+  .mock-kalankit .shot-hero {
+    grid-row: 1 / span 2;
+    background-image: url('assets/kalankit-hero.png');
+    background-position: center top;
+  }
+  .mock-kalankit .shot-wallets { background-image: url('assets/kalankit-wallets.png'); background-position: center top; }
+  .mock-kalankit .shot-sunglass { background-image: url('assets/kalankit-sunglass.png'); background-position: center top; }
+  .mock-kalankit .url-badge {
+    position: absolute; bottom: 12px; left: 12px;
+    padding: 5px 11px 5px 9px;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 999px;
+    font-family: var(--mono); font-size: 10px;
+    color: white; display: inline-flex; align-items: center; gap: 6px;
+    letter-spacing: 0.02em;
+  }
+  .mock-kalankit .url-badge::before {
+    content: ""; width: 6px; height: 6px; border-radius: 50%;
+    background: #6FE08B; box-shadow: 0 0 8px #6FE08B;
+  }
+
+  /* Mock SaaS feat */
+  .mock-saas {
+    background: radial-gradient(circle at 20% 30%, color-mix(in srgb, var(--coral) 18%, var(--surface)), var(--surface) 70%);
+    padding: 36px; display: grid; grid-template-columns: 1fr 1.4fr; gap: 28px; align-items: center;
+  }
+  .mock-saas .panel-l { display: flex; flex-direction: column; gap: 14px; }
+  .mock-saas .panel-l .label { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.08em; }
+  .mock-saas .panel-l .big { font-size: clamp(40px, 4vw, 64px); font-weight: 700; letter-spacing: -0.03em; line-height: 0.95; }
+  .mock-saas .panel-l .big em { color: var(--coral); font-style: normal; }
+  .mock-saas .panel-l .deltarow { display: flex; gap: 10px; }
+  .mock-saas .panel-l .pill {
+    padding: 6px 10px; background: rgba(255,255,255,0.06); border-radius: 6px;
+    font-family: var(--mono); font-size: 11px;
+  }
+  .mock-saas .panel-l .pill.up { color: #6FE08B; }
+  .mock-saas .panel-r {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--line);
+    border-radius: 12px; padding: 20px; height: 100%;
+    display: flex; flex-direction: column; gap: 12px;
+    backdrop-filter: blur(20px);
+  }
+  .mock-saas .panel-r .chart {
+    flex: 1; min-height: 120px;
+  }
+  .mock-saas .panel-r .chart svg { width: 100%; height: 100%; }
+  .mock-saas .panel-r .legend { display: flex; gap: 14px; font-family: var(--mono); font-size: 10px; color: var(--ink-soft); }
+  .mock-saas .panel-r .legend i { width: 8px; height: 8px; background: var(--coral); display: inline-block; margin-right: 4px; border-radius: 2px; vertical-align: middle; }
+  .mock-saas .panel-r .legend .alt i { background: var(--ink); }
+
+  /* Mock shop */
+  .mock-shop { background: #FAFAF7; padding: 24px; display: flex; flex-direction: column; gap: 14px; color: #0E0E0E; }
+  .mock-shop .row1 { display: flex; justify-content: space-between; align-items: baseline; }
+  .mock-shop .row1 b { font-weight: 700; font-size: 22px; letter-spacing: -0.02em; }
+  .mock-shop .row1 .cart { font-family: var(--mono); font-size: 11px; padding: 4px 10px; background: var(--coral); color: white; border-radius: 999px; }
+  .mock-shop .prods { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex: 1; }
+  .mock-shop .prod { background: #f0ede5; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; min-height: 80px; }
+  .mock-shop .prod .img { background: linear-gradient(135deg, #d8d4c8, #c2bdb0); height: 60%; border-radius: 4px; margin-bottom: 8px; }
+  .mock-shop .prod:nth-child(2) .img { background: var(--coral); }
+  .mock-shop .prod:nth-child(3) .img { background: #0E0E0E; }
+  .mock-shop .prod span { font-size: 11px; font-family: var(--mono); }
+  .mock-shop .prod b { font-size: 12px; }
+
+  /* Mock editorial */
+  .mock-mag {
+    background: var(--bg);
+    padding: 26px;
+    display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px;
+  }
+  .mock-mag .col-l { display: flex; flex-direction: column; justify-content: space-between; }
+  .mock-mag .col-l b {
+    font-size: clamp(28px, 3.2vw, 44px); line-height: 0.9; font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+  .mock-mag .col-l b em { color: var(--coral); font-style: normal; }
+  .mock-mag .col-l .lines { display: flex; flex-direction: column; gap: 4px; margin-top: 12px; }
+  .mock-mag .col-l .lines i { height: 4px; background: var(--line); border-radius: 2px; }
+  .mock-mag .col-l .lines i:nth-child(3) { width: 60%; }
+  .mock-mag .col-r {
+    background: var(--coral); border-radius: 10px; position: relative; overflow: hidden;
+  }
+  .mock-mag .col-r::before {
+    content: ""; position: absolute; inset: -10%;
+    background: radial-gradient(circle at 70% 30%, rgba(0,0,0,0.3), transparent 60%);
+  }
+
+  /* Mock app */
+  .mock-app { background: linear-gradient(135deg, #1f1c19, #0E0E0E); padding: 30px; display: flex; align-items: center; justify-content: center; gap: 18px; }
+  .mock-app .phone {
+    width: 100px; height: 200px; background: var(--ink); padding: 4px; border-radius: 18px;
+    box-shadow: 0 24px 50px rgba(0,0,0,0.5);
+  }
+  .mock-app .phone .screen {
+    background: var(--bg); border-radius: 14px; height: 100%;
+    padding: 12px; display: flex; flex-direction: column; gap: 8px;
+  }
+  .mock-app .phone .screen .bar {
+    height: 6px; width: 60%; background: var(--coral); border-radius: 3px;
+  }
+  .mock-app .phone .screen .blk { flex: 1; background: var(--surface); border-radius: 8px; }
+  .mock-app .phone:first-child { transform: translateY(10px) rotate(-4deg); }
+  .mock-app .phone:last-child { transform: translateY(-10px) rotate(4deg); }
+  .mock-app .phone:last-child .screen .bar { background: var(--ink); width: 40%; }
+
+  /* ────────────── SERVICES ────────────── */
+  .svc-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+  .svc {
+    grid-column: span 4;
+    padding: 32px 28px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    position: relative;
+    transition: background .3s, border-color .3s, transform .3s;
+  }
+  .svc.lg { grid-column: span 8; padding: 36px 32px; }
+  .svc.full { grid-column: span 12; padding: 36px 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+  @media (max-width: 900px) { .svc, .svc.lg, .svc.full { grid-column: span 12; } .svc.full { grid-template-columns: 1fr; } }
+  .svc:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--coral) 40%, var(--line)); }
+  .svc-num { font-family: var(--mono); font-size: 11px; color: var(--coral); letter-spacing: 0.08em; }
+  .svc h4 {
+    font-size: clamp(28px, 3vw, 40px);
+    line-height: 1; font-weight: 700; letter-spacing: -0.02em;
+    margin: 14px 0 14px;
+  }
+  .svc h4 .coral { color: var(--coral); }
+  .svc p { color: var(--ink-soft); font-size: 15px; max-width: 42ch; }
+  .svc.full ul {
+    list-style: none; display: flex; flex-direction: column; gap: 10px;
+    font-family: var(--mono); font-size: 13px; color: var(--ink-soft);
+  }
+  .svc.full ul li { display: flex; gap: 10px; align-items: baseline; }
+  .svc.full ul li::before { content: "→"; color: var(--coral); }
+  .svc-tag {
+    position: absolute; top: 28px; right: 28px;
+    font-family: var(--mono); font-size: 11px; color: var(--ink-soft);
+  }
+
+  /* ────────────── PROCESS ────────────── */
+  .process-strip {
+    border: 1px solid var(--line); border-radius: 18px;
+    overflow: hidden;
+  }
+  .process-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 900px) { .process-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 540px) { .process-grid { grid-template-columns: 1fr; } }
+  .step {
+    padding: 36px 30px; border-right: 1px solid var(--line);
+    background: var(--surface);
+    transition: background .3s;
+    position: relative;
+    min-height: 280px;
+    display: flex; flex-direction: column;
+  }
+  .step:last-child { border-right: none; }
+  .step:hover { background: color-mix(in srgb, var(--coral) 12%, var(--surface)); }
+  .step .num-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 36px; }
+  .step .num {
+    font-size: 56px; font-weight: 700; letter-spacing: -0.04em; line-height: 1;
+    color: var(--coral);
+  }
+  .step .week { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.08em; }
+  .step h5 { font-size: 22px; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.02em; }
+  .step p { font-size: 14px; color: var(--ink-soft); line-height: 1.55; }
+
+  /* ────────────── STATS ────────────── */
+  .stats { padding: 130px 0; background: var(--coral); color: white; }
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
+  .stats-grid.three { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 900px) { .stats-grid, .stats-grid.three { grid-template-columns: repeat(2, 1fr); } }
+  .stat {
+    padding: 30px 24px;
+    border-right: 1px solid rgba(255,255,255,0.25);
+  }
+  .stat:last-child { border-right: none; }
+  @media (max-width: 900px) { .stat:nth-child(2) { border-right: none; } }
+  .stat b {
+    font-size: clamp(56px, 8vw, 112px);
+    font-weight: 700; line-height: 0.9;
+    display: block; letter-spacing: -0.045em;
+    font-variation-settings: "opsz" 96;
+  }
+  .stat span {
+    margin-top: 16px; display: block; font-family: var(--mono);
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em;
+    max-width: 22ch; line-height: 1.4;
+  }
+
+  /* ────────────── LOGOS ────────────── */
+  .logos-section { padding: 90px 0; }
+  .logos-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0; align-items: center; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  @media (max-width: 900px) { .logos-row { grid-template-columns: repeat(3, 1fr); } }
+  .logo-cell {
+    padding: 32px 18px; text-align: center; color: var(--ink-soft);
+    font-weight: 700; font-size: 20px; letter-spacing: -0.02em;
+    border-right: 1px solid var(--line);
+    transition: color .2s, background .2s;
+  }
+  .logo-cell:nth-child(6n) { border-right: none; }
+  .logo-cell:hover { color: var(--coral); background: var(--surface); }
+  .logo-cell.mono { font-family: var(--mono); font-weight: 500; font-size: 14px; letter-spacing: 0; }
+
+  /* ────────────── ABOUT ────────────── */
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
+  .about-grid.solo { grid-template-columns: 1fr; }
+  .about-grid.solo .about-copy { max-width: 70ch; }
+  @media (max-width: 900px) { .about-grid { grid-template-columns: 1fr; gap: 40px; } }
+  .about-copy p { font-size: 18px; line-height: 1.55; margin-bottom: 18px; max-width: 48ch; color: var(--ink-soft); }
+  .about-copy p:first-of-type {
+    font-size: clamp(24px, 2.5vw, 34px); line-height: 1.25; color: var(--ink);
+    margin-bottom: 28px; font-weight: 500;
+  }
+  .about-copy p:first-of-type em { color: var(--coral); font-style: normal; }
+  .team-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .team-card {
+    aspect-ratio: 4/5; border-radius: 14px; overflow: hidden; position: relative;
+    background: var(--surface); border: 1px solid var(--line);
+    display: flex; flex-direction: column; justify-content: end;
+    padding: 22px;
+    transition: transform .3s, border-color .3s;
+  }
+  .team-card:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--coral) 30%, var(--line)); }
+  .team-card.coral { background: var(--coral); color: white; border-color: var(--coral); }
+  .team-card .face-shape {
+    position: absolute; top: 18%; left: 50%; transform: translateX(-50%);
+    width: 65%; aspect-ratio: 1; border-radius: 50%;
+    background: color-mix(in srgb, var(--coral) 16%, transparent);
+  }
+  .team-card.coral .face-shape { background: rgba(0,0,0,0.25); }
+  .team-card .face-shape::after {
+    content: ""; position: absolute; left: 30%; right: 30%; top: 80%; height: 40%;
+    background: inherit; border-radius: 50%;
+  }
+  .team-card .row1 { display: flex; justify-content: space-between; align-items: end; }
+  .team-card b { font-size: 22px; font-weight: 700; display: block; line-height: 1; letter-spacing: -0.02em; }
+  .team-card span { font-family: var(--mono); font-size: 11px; opacity: 0.7; margin-top: 6px; display: block; }
+  .team-card .role-tag {
+    padding: 4px 10px; background: rgba(255,255,255,0.1); border-radius: 999px;
+    font-family: var(--mono); font-size: 10px;
+  }
+  .team-card.coral .role-tag { background: rgba(0,0,0,0.2); }
+
+  /* ────────────── CONTACT ────────────── */
+  .contact { padding: 150px 0; background: var(--bg); position: relative; overflow: hidden; }
+  .contact::before {
+    content: ""; position: absolute; top: -200px; left: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, color-mix(in srgb, var(--coral) 22%, transparent), transparent 70%);
+    filter: blur(40px);
+    pointer-events: none;
+  }
+  .contact-head {
+    font-size: clamp(64px, 11vw, 200px);
+    line-height: 0.86; letter-spacing: -0.05em; font-weight: 700;
+    margin-bottom: 70px; font-variation-settings: "opsz" 96;
+    position: relative;
+  }
+  .contact-head .coral { color: var(--coral); }
+  .contact-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 60px; align-items: start; position: relative; }
+  @media (max-width: 820px) { .contact-grid { grid-template-columns: 1fr; gap: 40px; } }
+  .form { display: flex; flex-direction: column; gap: 18px; }
+  .field label {
+    display: block; font-family: var(--mono); font-size: 11px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-soft); margin-bottom: 8px;
+  }
+  .field input, .field textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 15px; font-family: var(--sans);
+    color: var(--ink); outline: none;
+    transition: border-color .2s, background .2s;
+  }
+  .field input:focus, .field textarea:focus { border-color: var(--coral); }
+  .field textarea { resize: none; min-height: 120px; }
+  .field input::placeholder, .field textarea::placeholder { color: var(--muted); }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    padding: 8px 14px; border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 999px; font-size: 13px; cursor: pointer;
+    font-family: var(--mono);
+    transition: background .2s, color .2s, border-color .2s;
+    user-select: none;
+  }
+  .chip.active, .chip:hover { background: var(--coral); color: white; border-color: var(--coral); }
+  .budget-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .budget {
+    padding: 10px 16px; border: 1px solid var(--line); background: var(--surface);
+    border-radius: 10px; font-family: var(--mono); font-size: 13px; cursor: pointer;
+    flex: 1; min-width: 100px; text-align: center;
+    transition: all .2s;
+  }
+  .budget.active, .budget:hover { background: var(--coral); color: white; border-color: var(--coral); }
+
+  .contact-side {
+    padding: 32px; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 18px;
+  }
+  .contact-side h6 { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 10px; }
+  .contact-side .big {
+    font-size: 22px; line-height: 1.3; margin-bottom: 26px;
+    font-weight: 500; letter-spacing: -0.01em;
+  }
+  .contact-side .big em { color: var(--coral); font-style: normal; }
+  .contact-side .avail-row {
+    display: flex; gap: 12px; margin-top: 28px; padding-top: 28px; border-top: 1px solid var(--line);
+  }
+  .contact-side .avail {
+    flex: 1; padding: 14px; border: 1px solid var(--line); border-radius: 10px;
+  }
+  .contact-side .avail b { display: block; font-family: var(--mono); font-size: 11px; color: #6FE08B; margin-bottom: 4px; }
+  .contact-side .avail span { font-size: 13px; color: var(--ink); }
+
+  /* ────────────── FOOTER ────────────── */
+  .footer { background: var(--bg); padding: 80px 0 32px; border-top: 1px solid var(--line); }
+  .footer-mega {
+    font-size: clamp(80px, 16vw, 260px);
+    line-height: 0.84; letter-spacing: -0.06em; font-weight: 700;
+    padding: 40px 0 60px; text-align: center;
+    color: var(--surface);
+    -webkit-text-stroke: 1px var(--line);
+    font-variation-settings: "opsz" 96;
+    user-select: none;
+  }
+  .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 60px; }
+  @media (max-width: 820px) { .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; } }
+  .footer-mark { font-size: 32px; line-height: 1.15; max-width: 14ch; font-weight: 700; letter-spacing: -0.02em; }
+  .footer-mark em { color: var(--coral); font-style: normal; }
+  .footer h6 { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 16px; }
+  .footer ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .footer ul a:hover { color: var(--coral); }
+  .footer-bottom {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 28px; border-top: 1px solid var(--line);
+    font-family: var(--mono); font-size: 11px;
+    color: var(--ink-soft);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+
+  /* ════════ WHEEL ANIMATION ════════ */
+  /* Fixed scroll companion — only the bottom-right wheel remains */
+  .wheel-pin {
+    position: fixed;
+    bottom: 26px; right: 26px;
+    width: 54px; height: 54px;
+    z-index: 30;
+    opacity: 0.92;
+    pointer-events: none;
+    will-change: transform;
+    filter: drop-shadow(0 0 14px rgba(224,72,48,0.5));
+  }
+  .wheel-pin img { width: 100%; height: 100%; display: block; }
+
+  body.wheels-off .wheel-pin { display: none; }
+
+  @media (max-width: 720px) {
+    .wheel-pin { width: 42px; height: 42px; bottom: 18px; right: 18px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wheel-pin { display: none; }
+  }
+
+  /* Reveal */
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity .8s ease, transform .8s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+</style>
+</head>
+<body>
+
+<!-- ═════════════ NAV ═════════════ -->
+<header class="nav">
+  <div class="container nav-row">
+    <a href="#" class="brand" aria-label="AtmousMind home"><img src="assets/atmousmind-logo-dark.png" alt="AtmousMind" /></a>
+    <nav class="nav-links">
+      <a href="#work">Work</a>
+      <a href="#services">Services</a>
+      <a href="#process">Process</a>
+      <a href="#studio">Studio</a>
+    </nav>
+    <a href="#contact" class="nav-cta">Start a project</a>
+  </div>
+</header>
+
+<!-- ═════════════ HERO ═════════════ -->
+<section class="hero" data-screen-label="01 Hero">
+  <div class="container">
+    <div class="hero-meta">
+      <span class="pulse"><span class="dot"></span>STUDIO OPEN · 2 SLOTS · Q3 2026</span>
+      <span>EST. 2021 · JAIPUR / REMOTE / WORLDWIDE</span>
+    </div>
+    <h1 class="hero-head in">
+      <span class="row1">
+        We build<span class="tag">● Web · Apps · Stores</span>
+      </span>
+      websites<br>
+      that <span class="underline">don't suck.</span><br>
+      <span class="coral">No, really.</span>
+    </h1>
+    <div class="hero-foot">
+      <p class="hero-lede">
+        AtmousMind is a <em>web development studio</em> for founders who think their website should be the best part of their company, not the embarrassing one.
+      </p>
+      <div class="hero-actions">
+        <a href="#work" class="btn-primary">See the work →</a>
+        <a href="#contact" class="btn-ghost">Book intro call</a>
+      </div>
+      <div class="hero-stats">
+        <div><b>120<span style="color:var(--coral)">+</span></b><span>Projects shipped</span></div>
+        <div><b>4.9★</b><span>Avg. client rating</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ TICKER ═════════════ -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span>● Marketing sites <span class="sep">/</span> SaaS Products <span class="sep">/</span> E-commerce <span class="sep">/</span> Shopify <span class="sep">/</span> Custom CMS <span class="sep">/</span> Brand Systems <span class="sep">/</span> Mobile-First <span class="sep">/</span> Available Q3 2026 <span class="sep">/</span></span>
+    <span>● Marketing sites <span class="sep">/</span> SaaS Products <span class="sep">/</span> E-commerce <span class="sep">/</span> Shopify <span class="sep">/</span> Custom CMS <span class="sep">/</span> Brand Systems <span class="sep">/</span> Mobile-First <span class="sep">/</span> Available Q3 2026 <span class="sep">/</span></span>
+  </div>
+</div>
+
+<!-- ═════════════ WORK ═════════════ -->
+<section class="section" id="work" data-screen-label="02 Work">
+  <div class="container">
+    <div class="section-label">Selected work · 2026</div>
+    <h2 class="section-head">Real clients, <span class="coral">real stores,</span> built end-to-end.</h2>
+
+    <div class="work-grid">
+
+      <!-- 001 · The India Craft House (Featured) -->
+      <article class="work-card feat">
+        <div class="work-visual">
+          <div class="mock mock-tich">
+            <div class="shot shot-hero">
+              <span class="url-badge">theindiacrafthouse.com</span>
+            </div>
+            <div class="shot shot-pottery"></div>
+            <div class="shot shot-shirts"></div>
+          </div>
+        </div>
+        <div class="work-body">
+          <div class="work-row1">
+            <span class="work-num">001 — Featured · E-commerce</span>
+            <span class="work-year">2026</span>
+          </div>
+          <h3>The India <span class="coral">Craft House</span></h3>
+          <div class="work-meta">
+            <span>
+</span><span class="dot">·</span>
+            <span>Custom Liquid theme</span><span class="dot">·</span>
+            <span>Editorial commerce</span><span class="dot">·</span>
+            <span>Multi-collection IA</span>
+          </div>
+          <p style="color: var(--ink-soft); font-size: 15px; max-width: 60ch;">A heritage e-commerce platform celebrating India's handicraft tradition. We rebuilt the storefront around an editorial discovery model — shop by craft, shop by state — and gave the artisan stories the space they deserved.</p>
+          <div class="work-result">
+            <div style="display: flex; gap: 32px;">
+              <div class="metric"><b>100<span style="color:white;font-weight:500">+</span></b><span>craft forms</span></div>
+              <div class="metric"><b>21 states</b><span>artisan network</span></div>
+              <div class="metric"><b>2,000<span style="color:white;font-weight:500">+</span></b><span>artisans served</span></div>
+            </div>
+            <a href="https://theindiacrafthouse.com/" target="_blank" rel="noopener" class="view-link">Visit live ↗</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 002 · Arshis -->
+      <article class="work-card">
+        <div class="work-visual">
+          <div class="mock mock-arshis">
+            <div class="shot shot-hero">
+              <span class="url-badge">arshis.in</span>
+            </div>
+            <div class="shot shot-cats"></div>
+          </div>
+        </div>
+        <div class="work-body">
+          <div class="work-row1">
+            <span class="work-num">002 · E-commerce</span>
+            <span class="work-year">2026</span>
+          </div>
+          <h3>Arshis <span class="coral">Jewellery</span></h3>
+          <div class="work-meta">
+            <span>
+</span><span class="dot">·</span>
+            <span>Liquid</span><span class="dot">·</span>
+            <span>Thanjavur, TN</span>
+          </div>
+          <p style="color: var(--ink-soft); font-size: 14px;">A regal South Indian jewellery store with deep category architecture — necklace, haram, choker, jhumka and more — plus a temple-jewellery editorial feel that fits the brand.</p>
+          <div class="work-result">
+            <div style="display: flex; gap: 24px;">
+              <div class="metric"><b>9 cats</b><span>jewellery + 8 access.</span></div>
+              <div class="metric"><b>500<span style="color:white;font-weight:500">+</span></b><span>SKUs live</span></div>
+            </div>
+            <a href="https://arshis.in/" target="_blank" rel="noopener" class="view-link">Visit ↗</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 003 · Unique Info Systems -->
+      <article class="work-card">
+        <div class="work-visual">
+          <div class="mock mock-uis">
+            <div class="shot shot-hero">
+              <span class="url-badge">uniqueinfosys.com</span>
+            </div>
+            <div class="shot shot-product"></div>
+          </div>
+        </div>
+        <div class="work-body">
+          <div class="work-row1">
+            <span class="work-num">003 · Marketing site · B2B</span>
+            <span class="work-year">2026</span>
+          </div>
+          <h3>Unique <span class="coral">Info Systems</span></h3>
+          <div class="work-meta">
+            <span>Custom build</span><span class="dot">·</span>
+            <span>B2B / SaaS reseller</span><span class="dot">·</span>
+            <span>Jaipur</span>
+          </div>
+          <p style="color: var(--ink-soft); font-size: 14px;">A credibility-first marketing site for a Tally partner serving Indian businesses since 2010. Clear product flows for the SoftTrade suite, WhatsApp-first inquiry, and trust signals on every screen — because B2B buyers pick on trust.</p>
+          <div class="work-result">
+            <div style="display: flex; gap: 24px;">
+              <div class="metric"><b>500<span style="color:white;font-weight:500">+</span></b><span>happy clients</span></div>
+              <div class="metric"><b>4.8★</b><span>across 420 reviews</span></div>
+            </div>
+            <a href="https://www.uniqueinfosys.com/" target="_blank" rel="noopener" class="view-link">Visit ↗</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 004 · Kalankit (Featured) -->
+      <article class="work-card feat">
+        <div class="work-visual">
+          <div class="mock mock-kalankit">
+            <div class="shot shot-hero">
+              <span class="url-badge">kalankit.com</span>
+            </div>
+            <div class="shot shot-wallets"></div>
+            <div class="shot shot-sunglass"></div>
+          </div>
+        </div>
+        <div class="work-body">
+          <div class="work-row1">
+            <span class="work-num">004 — Featured · E-commerce</span>
+            <span class="work-year">2026</span>
+          </div>
+          <h3>Kalān<span class="coral">kit</span></h3>
+          <div class="work-meta">
+            <span>Artist-led D2C</span><span class="dot">·</span>
+            <span>Bags, wallets, travel</span><span class="dot">·</span>
+            <span>Custom catalog IA</span><span class="dot">·</span>
+            <span>Promo + sale flows</span>
+          </div>
+          <p style="color: var(--ink-soft); font-size: 15px; max-width: 60ch;">A storefront for an artist-led accessories brand — every illustrated bag, wallet and sunglass cover credits the artist behind it. We built a catalog model that lets shoppers browse by artist, by category, and by occasion, with a homepage built around the bestsellers and the running promo.</p>
+          <div class="work-result">
+            <div style="display: flex; gap: 32px;">
+              <div class="metric"><b>6<span style="color:white;font-weight:500">+</span> artists</b><span>featured collaborators</span></div>
+              <div class="metric"><b>4 categories</b><span>Bags · Wallets · Travel · Art</span></div>
+              <div class="metric"><b>
+</b><span>
+</span></div>
+            </div>
+            <a href="https://kalankit.com/" target="_blank" rel="noopener" class="view-link">Visit live ↗</a>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ SERVICES ═════════════ -->
+<section class="section" id="services" data-screen-label="03 Services">
+  <div class="container">
+    <div class="section-label">What we actually do</div>
+    <h2 class="section-head">Five services, <span class="coral">done properly.</span> No retainers we don't deliver on.</h2>
+
+    <div class="svc-grid">
+      <div class="svc lg">
+        <span class="svc-tag">↗ Most popular</span>
+        <div class="svc-num">01</div>
+        <h4>Marketing <span class="coral">sites</span></h4>
+        <p>Landing pages and full marketing sites for startups that need to look serious from day one. Custom design, CMS your team can ship to, real performance on real devices.</p>
+      </div>
+      <div class="svc">
+        <span class="svc-tag">↗</span>
+        <div class="svc-num">02</div>
+        <h4>SaaS <span class="coral">products</span></h4>
+        <p>Web apps from canvas to first 1,000 users. Dashboards, onboarding, design systems built to scale.</p>
+      </div>
+      <div class="svc">
+        <span class="svc-tag">↗</span>
+        <div class="svc-num">03</div>
+        <h4>Shopify <span class="coral">stores</span></h4>
+        <p>Custom themes for brands tired of looking like everyone else. Built for conversion, designed for taste.</p>
+      </div>
+      <div class="svc lg">
+        <span class="svc-tag">↗</span>
+        <div class="svc-num">04</div>
+        <h4>Design <span class="coral">+ development, end-to-end</span></h4>
+        <p>One team, one timeline — discovery through deploy. Custom code or Webflow, whichever fits your operating model. No handoffs that water down the work.</p>
+      </div>
+      <div class="svc full">
+        <div>
+          <div class="svc-num">05</div>
+          <h4>Mobile-responsive <span class="coral">everything</span></h4>
+          <p style="margin-bottom: 0;">Real devices, real testing. Every site we ship gets touched on phones, tablets, and the largest desktop we can find — not just the Chrome devtools panel.</p>
+        </div>
+        <ul>
+          <li>iOS Safari + iPadOS · real hardware testing</li>
+          <li>Android Chrome · Pixel + Samsung Galaxy</li>
+          <li>Lighthouse 95+ on mobile, every project</li>
+          <li>Reduced motion, dark mode, RTL ready</li>
+          <li>WCAG 2.2 AA accessibility baseline</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ PROCESS ═════════════ -->
+<section class="section" id="process" data-screen-label="04 Process">
+  <div class="container">
+    <div class="section-label">How we work</div>
+    <h2 class="section-head">Four weeks, four <span class="coral">deliberate</span> steps.</h2>
+
+    <div class="process-strip">
+      <div class="process-grid">
+        <div class="step">
+          <div class="num-row"><div class="num">01</div><div class="week">Week 1</div></div>
+          <h5>Discover</h5>
+          <p>We talk to your team, users, and numbers. Out comes a written brief everyone signs off on — no surprises later.</p>
+        </div>
+        <div class="step">
+          <div class="num-row"><div class="num">02</div><div class="week">Week 2–3</div></div>
+          <h5>Design</h5>
+          <p>Two or three real directions, presented full-screen, not in a deck. We iterate live — you watch the file evolve.</p>
+        </div>
+        <div class="step">
+          <div class="num-row"><div class="num">03</div><div class="week">Week 4–7</div></div>
+          <h5>Develop</h5>
+          <p>Real code, real CMS, real previews. Weekly demos on staging — you ship feedback, we ship updates.</p>
+        </div>
+        <div class="step">
+          <div class="num-row"><div class="num">04</div><div class="week">Week 8</div></div>
+          <h5>Deploy</h5>
+          <p>Launch checklist, analytics, handover docs, 30-day care. Then we hand you the keys — or stay on retainer.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ STATS ═════════════ -->
+<section class="stats" data-screen-label="05 Stats">
+  <div class="container">
+    <div class="stats-grid three">
+      <div class="stat"><b>120<span style="font-weight:500">+</span></b><span>Projects shipped</span></div>
+      <div class="stat"><b>4.9★</b><span>Average client rating</span></div>
+      <div class="stat"><b>86<span style="font-weight:500">%</span></b><span>Clients come back for round two</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ LOGOS ═════════════ -->
+<section class="logos-section">
+  <div class="container">
+    <div class="section-label">Trusted by</div>
+    <div class="logos-row">
+      <div class="logo-cell">India Craft House</div>
+      <div class="logo-cell">Arshis</div>
+      <div class="logo-cell mono">Unique Info Sys.</div>
+      <div class="logo-cell">Kalankit</div>
+      <div class="logo-cell mono">+ 8 others</div>
+      <div class="logo-cell">Yours next?</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ ABOUT ═════════════ -->
+<section class="section" id="studio" data-screen-label="06 Studio">
+  <div class="container">
+    <div class="section-label">The studio</div>
+    <h2 class="section-head">Small team. Treats your site like <span class="coral">our own.</span></h2>
+
+    <div class="about-grid solo">
+      <div class="about-copy">
+        <p>We started AtmousMind in 2021 because we missed the days when websites felt <em>made</em>, not assembled. Every project we take on is shaped by hand, by the same three or four people, from the first conversation to the last deploy.</p>
+        <p>That means no account managers, no offshore handoffs, no design that gets watered down on the way to development. You talk to the designer. You talk to the developer. Often they're the same person.</p>
+        <p>We work with founders, marketing leads, and product teams who want their website to be the best thing about their company, not the embarrassing thing they'd like to redo. We take on roughly twelve projects a year. That's the math we like.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ CONTACT ═════════════ -->
+<section class="contact" id="contact" data-screen-label="07 Contact">
+  <div class="container">
+    <h2 class="contact-head">Let's make<br>something <span class="coral">good.</span></h2>
+
+    <div class="contact-grid">
+      <form class="form" onsubmit="event.preventDefault(); alert('Form would send — this is a design preview.');">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="field">
+            <label>Your name</label>
+            <input type="text" placeholder="Jane Doe" />
+          </div>
+          <div class="field">
+            <label>Email</label>
+            <input type="email" placeholder="jane@company.com" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Company</label>
+          <input type="text" placeholder="Acme Inc." />
+        </div>
+        <div class="field">
+          <label>What do you need?</label>
+          <div class="chip-row">
+            <div class="chip" onclick="this.classList.toggle('active')">Marketing site</div>
+            <div class="chip active" onclick="this.classList.toggle('active')">SaaS / Web app</div>
+            <div class="chip" onclick="this.classList.toggle('active')">E-commerce</div>
+            <div class="chip" onclick="this.classList.toggle('active')">Brand + site</div>
+            <div class="chip" onclick="this.classList.toggle('active')">Not sure yet</div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Tell us about the project</label>
+          <textarea placeholder="A few sentences is plenty — what you're building, when you need it, anything you've seen and liked."></textarea>
+        </div>
+        <button type="submit" class="btn-primary" style="align-self: flex-start; margin-top: 12px;">Send it our way →</button>
+      </form>
+
+      <aside class="contact-side">
+        <h6>Reply within</h6>
+        <p class="big">One <em>working day</em>, usually faster.</p>
+
+        <h6>Email directly</h6>
+        <p class="big" style="font-family: var(--mono); font-size: 17px;">hello@<em>atmousmind</em>.studio</p>
+
+        <h6>Studio</h6>
+        <p style="font-size: 14px; color: var(--ink-soft); line-height: 1.55;">C-Scheme, Malviya Nagar<br>Jaipur 302017 · India<br>Remote-friendly worldwide</p>
+
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ FOOTER ═════════════ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-mega">ATMOUSMIND</div>
+    <div class="footer-top">
+      <div>
+        <p class="footer-mark">We build websites you'll be <em>proud</em> of.</p>
+      </div>
+      <div>
+        <h6>Studio</h6>
+        <ul>
+          <li><a href="#work">Work</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#process">Process</a></li>
+          <li><a href="#studio">About</a></li>
+        </ul>
+      </div>
+      <div>
+        <h6>Elsewhere</h6>
+        <ul>
+          <li><a href="#">Twitter / X</a></li>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Dribbble</a></li>
+          <li><a href="#">LinkedIn</a></li>
+        </ul>
+      </div>
+      <div>
+        <h6>Contact</h6>
+        <ul>
+          <li><a href="mailto:hello@atmousmind.studio">hello@atmousmind.studio</a></li>
+          <li><a href="#contact">Start a project</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 AtmousMind Studio · All rights reserved</span>
+      <span>Made by hand, in Jaipur</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Fixed scroll wheel — bottom-right -->
+<div class="wheel-pin" aria-hidden="true">
+  <img src="assets/wheel.png" alt="" />
+</div>
+
+<!-- Tweaks panel host -->
+<div id="tweaks-root"></div>
+
+<script type="text/babel" data-presets="env,react">
+const { useEffect } = React;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "accentColor": "#E04830",
+  "background": "#0E0E0E",
+  "headlineFont": "Bricolage Grotesque",
+  "tickerOn": true,
+  "megaFooterOn": true,
+  "wheelsOn": true
+}/*EDITMODE-END*/;
+
+const ACCENT_OPTIONS = ["#E04830", "#FF6B35", "#6FE08B", "#7B61FF"];
+const BG_PALETTES = [
+  ["#0E0E0E", "#1A1A1A", "#FAFAF7"], // Dark (default)
+  ["#FAFAF7", "#F0EDE5", "#0E0E0E"], // Light
+  ["#0F1419", "#1A2027", "#FAFAF7"], // Midnight
+];
+const FONT_OPTIONS = ["Bricolage Grotesque", "Space Grotesk", "Archivo"];
+
+function loadFont(family) {
+  if (family === "Bricolage Grotesque") return;
+  const id = 'font-' + family.replace(/\\s+/g, '-');
+  if (document.getElementById(id)) return;
+  const l = document.createElement('link');
+  l.id = id; l.rel = 'stylesheet';
+  l.href = `https://fonts.googleapis.com/css2?family=${family.replace(/\\s+/g, '+')}:wght@400;500;700;800&display=swap`;
+  document.head.appendChild(l);
+}
+
+function App() {
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+  useEffect(() => {
+    const r = document.documentElement.style;
+    r.setProperty('--coral', t.accentColor);
+    r.setProperty('--coral-soft', t.accentColor);
+
+    // Background palette
+    const [bg, surface, ink] = t.background.length ? [t.background, t.background, ''] : ['#0E0E0E', '#1A1A1A', '#FAFAF7'];
+
+    loadFont(t.headlineFont);
+    r.setProperty('--sans', `"${t.headlineFont}", -apple-system, BlinkMacSystemFont, sans-serif`);
+
+    document.querySelectorAll('.ticker').forEach(el => el.style.display = t.tickerOn ? 'block' : 'none');
+    document.querySelectorAll('.footer-mega').forEach(el => el.style.display = t.megaFooterOn ? 'block' : 'none');
+    document.body.classList.toggle('wheels-off', !t.wheelsOn);
+  }, [t]);
+
+  return (
+    <TweaksPanel title="Tweaks · Brutalist">
+      <TweakSection title="Color">
+        <TweakColor label="Accent" value={t.accentColor} options={ACCENT_OPTIONS} onChange={v => setTweak('accentColor', v)} />
+      </TweakSection>
+      <TweakSection title="Type">
+        <TweakSelect label="Display font" value={t.headlineFont} options={FONT_OPTIONS} onChange={v => setTweak('headlineFont', v)} />
+      </TweakSection>
+      <TweakSection title="Toggles">
+        <TweakToggle label="Coral ticker strip" value={t.tickerOn} onChange={v => setTweak('tickerOn', v)} />
+        <TweakToggle label="Big footer wordmark" value={t.megaFooterOn} onChange={v => setTweak('megaFooterOn', v)} />
+        <TweakToggle label="Corner wheel" value={t.wheelsOn} onChange={v => setTweak('wheelsOn', v)} />
+      </TweakSection>
+    </TweaksPanel>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('tweaks-root')).render(<App />);
+</script>
+
+<script>
+  // Reveal on scroll
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    }
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.work-card, .step, .stat, .svc, .team-card').forEach(el => {
+    el.classList.add('reveal');
+    io.observe(el);
+  });
+</script>
+
+<script>
+  // ════ WHEEL SCROLL ENGINE — pin only ════
+  (function() {
+    const pin = document.querySelector('.wheel-pin img');
+    if (!pin) return;
+
+    let baseR = 0;
+    let lastTime = performance.now();
+
+    function frame(now) {
+      const dt = Math.min(50, now - lastTime);
+      lastTime = now;
+      const y = window.scrollY;
+      baseR += dt * 0.02;
+      pin.style.transform = `rotate(${baseR + y * 0.55}deg)`;
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  })();
+</script>
+
+</body>
+</html>
